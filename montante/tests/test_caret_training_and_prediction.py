@@ -52,5 +52,4 @@ class TestCaretTrainingAndPrediction(BaseTest):
 
 
 if __name__ == '__main__':
-    # TODO: Fix error when calling script?
     unittest.main()
