@@ -5,8 +5,13 @@ See:
 """
 
 from typing import Tuple, Union
+
 import pandas as pd
 from sklearn import datasets
+from rpy2.robjects import r
+from rpy2.robjects import pandas2ri
+from rpy2.robjects.vectors import DataFrame as RDataFrame
+
 
 from ..operations.dataframe.functions import pd_sanitize_column_names_for_r
 
@@ -30,9 +35,33 @@ def sklearn_wine() -> Tuple[pd.DataFrame, str, str]:
     return df, 'Wine dataset from sklearn examples', wine['DESCR']
 
 
+def r_iris_raw() -> RDataFrame:
+    r('data(iris)')
+    iris = r('iris')
+    return iris
+
+
+def r_iris() -> Tuple[pd.DataFrame, str, str]:
+    """
+    See:
+        http://www.jamesloach.com/python/pandas2ri.html
+
+    Notes: pandas2ri.activate call seems to be necessary inside function call
+    so it gets called from outside. Also, calling r_iris_raw() inside
+    pandas2ri.ri2py raises NotImplementedError.
+    """
+    r('data(iris)')
+    iris = r('iris')
+    pandas2ri.activate()
+    out = pandas2ri.ri2py(iris)
+    pandas2ri.deactivate()
+    return out, 'Iris dataset from R example data', ''
+
+
 example_dataset_functions = [
     sklearn_iris,
-    sklearn_wine
+    sklearn_wine,
+    r_iris
 ]
 
 
